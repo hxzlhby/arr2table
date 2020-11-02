@@ -8,42 +8,49 @@ namespace Hxzlhby;
 
 class Arr2Table
 {
+    public static $header = '<!doctype html> <html lang="en"> <head> <meta charset="utf-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>可视化数据</title> <style type="text/css"> .customers { font-family: "Trebuchet MS", Arial, Helvetica, sans-serif; width: 100%; border-collapse: collapse; } .customers td, .customers th { font-size: 1em; border: 1px solid #1E9FFF; text-align: left; } .customers th { font-size: 1.1em; text-align: left; background-color: #1E9FFF; color: #ffffff; } .customers tr.autocolor td { color: #000000; background-color: #EAF2D3; } </style> </head><body>';
+    public static $footer = '</body></html>';
     //获取表标题
-    protected static function getTableTitle($title = '', $colspan = '') : string
+    public static function moreTable($data = [], $isMore = false)
     {
-        $colspan = $colspan ? 'colspan="'.$colspan.'"' : '';
-        return $title ? '<tr><th '.$colspan.' class="text-center">'.$title.'</th></tr>' : '';
+        if (empty($data)) return '无数据';
+        $table ='';
+        foreach ($data as $v) {
+            $table .= self::buildTable($v);
+        }
+        return self::$header.$table.self::$footer;
     }
-    
-    public static function getHtmlTable($data = [], $title = '') : string
+
+    public static function oneTable($data)
     {
-        $thead = '<thead>';
-        $head = array_shift($data);
-        $colspan = count($head);
-        $tableTitle = self::getTableTitle($title, $colspan);
-        $th = '<tr>';
-        foreach ($head as $value) {
-            $th .= '<th>'.$value.'</th>';
+        if (empty($data)) return '无数据';
+        $table = self::oneTable($data);
+        return self::$header.$table.self::$footer;
+    }
+
+    private static function buildTable($data)
+    {
+        $tableStart = "<table class='customers'>";
+        $tableEnd = '</table>';
+        $caption = current(array_shift($data));
+        $caption = "<caption> <h2 align='center' style='color: black;'>{$caption}</h2> </caption>";
+        $thead = '<thead> <tr>';
+        $th = array_shift($data);
+        foreach ($th as $v) {
+            $thead .= "<th>{$v}</th>";
         }
-        $th .= '</tr>';
-        $thead .= $tableTitle.$th.'</thead>';
-        
+        $thead .= '</tr></thead>';
+
         $tbody = '<tbody>';
-        $tr = '';
-        foreach ($data as $value) {
-            $tr .= '<tr>';
+        foreach ($data as $k=>$value) {
+            $class = $k%2!=0 ? 'class="autocolor"':'';
+            $tbody .= "<tr {$class}>";
             foreach ($value as $v) {
-                $tr .= '<td>'.$v.'</td>';
+                $tbody .= "<td>{$v}</td>";
             }
-            $tr .= '</tr>';
+            $tbody .= '</tr>';
         }
-        $tbody .= $tr.'</tbody>';
-        
-        $table = '<table class="table table-bordered">'
-            .$thead
-            .$tbody
-            .'</table>';
-        return $table;
+        return $tableStart.$caption.$thead.$tbody.$tableEnd;
     }
     
 }
