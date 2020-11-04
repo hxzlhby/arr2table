@@ -33,7 +33,7 @@ class Arr2Table
     public static function oneTable($data = [])
     {
         if (empty($data)) return '无数据';
-        $table = self::oneTable($data);
+        $table = self::buildTable($data);
         return self::$header.$table.self::$footer;
     }
 
